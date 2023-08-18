@@ -1,17 +1,17 @@
-import os
+	import os
 import argparse
 import shutil
 import pathlib
-
+ 
 TempDIR = os.getcwd() + "/" + ".temp"
 HERE = os.path.realpath(os.path.dirname(__file__))
-
+ 
 parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument('-i' , '--input' , type=argparse.FileType('r') , help='''input the super.img that is going to be modifed, if super.img is sparse its going to temporarily be unsparsed''')
 parser.add_argument('-o' , '--output', help="Directs the output to a name of your choice")
 parser.add_argument('-s' , '--SLOT' , type=int , help="number of slots on the device can only be 1 (A) or 2 (A/B)")
 args = parser.parse_args()
-
+ 
 # err check
 def check():
     err = ""
@@ -38,13 +38,13 @@ def check():
     except AttributeError:
         err = "Flag AttributeError"
     return err
-
+ 
 # unpack / replacing
-
+ 
 def lpunpack():
     #!/usr/bin/python  # -*- coding: latin-1 -*-
     os.system("python3 {dir}/lpunpack.py {superimg} {tempdir}".format(superimg=args.input.name, tempdir=TempDIR , dir=HERE))
-
+ 
 def IMGmanipulation(): # choose an img file to be replaced
     TempImgList = os.listdir(TempDIR)
     i = 0
@@ -118,7 +118,7 @@ def IMGmanipulation(): # choose an img file to be replaced
                 print("Please Put a Valid Number!")
         except ValueError:
             print("Please Put a Number In!")
-
+ 
 def IMGsizeCALC(): # calculate size
     totalsize = 5120000 # a bit of overhead
     TempImgList = os.listdir(TempDIR)
@@ -130,9 +130,9 @@ def IMGsizeCALC(): # calculate size
     reminder = totalsize % 512 # making devision by 512
     totalsize += reminder
     return totalsize
-
+ 
 # lpmake
-def lpmake(devicesize , metadatasize):
+def lpmdef lpmake(devicesize , metadatasize):
     lpmake_args = " --device-size={devicesize}".format(devicesize=devicesize) + " --metadata-slots={slot}".format(slot=args.SLOT) + " --output {output}".format(output=args.output) + " --metadata-size {metadatasize}".format(metadatasize=metadatasize)
     sparse = input("make sparse (flashable with fastboot) ? (Y/n): ")
     if sparse == "Y" or sparse == "y" or sparse == "yes" or sparse == "Yes" or sparse == "": # just making sure
@@ -146,7 +146,7 @@ def lpmake(devicesize , metadatasize):
     print("============================")
     
     return os.system("{dir}/bin/lpmake {lpargs}".format(lpargs=lpmake_args , dir=HERE))
-
+ 
 def lpmake_add_args(lpmake_args):
     TempImgList = os.listdir(TempDIR)
     for img in TempImgList:
@@ -155,16 +155,16 @@ def lpmake_add_args(lpmake_args):
             if os.path.getsize(TempDIR + "/" + img) != 0:
                 lpmake_args += " --image={name}={filedir}".format(name=os.path.splitext(img)[0] , filedir=(TempDIR + "/" + img))
     return lpmake_args
-
+ 
 def testdvi512(num):
     if num % 512 == 0:
         return True
     else:
         return False
-
+ 
 def main():
     err = check()
-
+ 
     if err != "OK":
         print("error code ({error}) exiting...!".format(error=err))
         return err
